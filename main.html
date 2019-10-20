@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <title>Team-Messaging-App</title>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+    </head> 
+    <body>
+       <div ng-app="myApp" ng-controller="myCtrl">
+            <h1>Team-Messaging-App</h1>
+            <button ng-click="login()">Login</button>
+            <button ng-click="signUp()">signUp</button>
+            <div ng-show="check">
+                <h2>Login</h2>
+                <form name="form"  method="GET" action="/login" role="form">
+                    <div class="form-group">
+                        <label for="Email">Email:</label>
+                        <input type="email" id="email" class="form-control" required />
+                    </div><br>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" class="form-control" required />
+                    </div><br>
+                    <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+            <div ng-show="check1">
+                    <h2>signUp</h2>
+                    <form name="form" role="form">
+                        <div class="form-group">
+                            <label for="Email">Email:</label>
+                            <input type="email" ng-model="email" id="email" class="form-control"required/>
+                        </div><br>
+                        <div class="form-group">
+                                <label for="Region">Region:</label>
+                                <input type="text" id="region"  ng-model="region" class="form-control"  required />
+                            </div><br>
+                        <div class="form-group">
+                                <label for="userName">UserName:</label>
+                                <input type="text" id="username"  ng-model="username" class="form-control"required />
+                        </div><br>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" ng-model="password" name="password" class="form-control" required ng-pattern="/^(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,20}$/">
+                            <div ng-messages="form.password.$error">
+                                <br>
+                                <div style="color:orange" ng-show="!form.password.$valid">Password should be at least 8 characters
+                                    long and should contain one number,one character and one special
+                                    character</div>
+                            </div>
+                            <div style="color: green" ng-show="form.password.$valid">Valid Password</div>
+                        </div>
+                        <button type="submit" ng-disabled="form.$invalid" ng-click="submit()" class="btn btn-primary">signUp</button>
+                    </form>
+            </div>
+        </div>
+        <script>
+                var app = angular.module('myApp', []);
+                app.controller('myCtrl', function($scope, $http,$window, $timeout) {
+                    $scope.login = function(){
+                        $scope.check = true
+                        $scope.check1 = false
+                    }
+                    $scope.signUp = function(){
+                        $scope.check1 = true
+                        $scope.check = false
+                    };
+                    $scope.submit= function(){
+                    var data = JSON.stringify({
+                            email: $scope.email,
+                            region : $scope.region,
+                            username : $scope.username,
+                            password:  $scope.password
+                    });
+                    $http({
+                        url: "/signUp", 
+                        method: "POST",
+                        data: data
+                    }).then(data=>{
+                        console.log(data,data.data)
+                        $timeout(function() {
+                            alert(data.data);
+                      },0).then(function(){
+                          window.location.href = "/";
+                      });
+                    }).catch(err=>{
+                        console.log("err:",err);
+                    })
+                }
+                });
+        </script>
+    </body>
+</html>
