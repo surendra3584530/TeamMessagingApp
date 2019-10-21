@@ -17,13 +17,33 @@ mongoose.connect(url,{ useNewUrlParser: true})
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use(express.static('view'));
+
 // app.use(app.router);
 app.get('/', (req, res) =>{
     res.sendFile(__dirname + '/main.html');
 })
 
-app.get('/login', (req, res) =>{
-    res.send("hello");
+app.post('/login', (req, res) =>{
+    console.log("hello",req.body);
+    user.find({
+        email:req.body.email
+    },{password:1})
+    .then(data=>{
+        if(data.length == 0){
+            res.send("Invalid Email_id");
+        }else{
+           bcrypt.compare(req.body.password,data[0].password,(err,isMatch)=>{
+               if(err) console.log(err)
+               if(isMatch){
+                  res.send("Login successfully...");
+               }else{
+                  res.send("Password Incorrect");
+               }
+           })
+        }
+    })
+
 })
 
 app.post("/signUp", (req, res) =>{

@@ -1,0 +1,29 @@
+<div> 
+        <h2>signUp</h2>
+        <form name="form" role="form" ng-controller="signUp">
+            <div class="form-group">
+                <label for="Email">Email:</label>
+                <input type="email" ng-model="email" id="email" class="form-control"required/>
+            </div><br>
+            <div class="form-group">
+                    <label for="Region">Region:</label>
+                    <input type="text" id="region"  ng-model="region" class="form-control"  required />
+                </div><br>
+            <div class="form-group">
+                    <label for="userName">UserName:</label>
+                    <input type="text" id="username"  ng-model="username" class="form-control"required />
+            </div><br>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" ng-model="password" name="password" class="form-control" required ng-pattern="/^(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,20}$/">
+                <div ng-messages="form.password.$error">
+                    <br>
+                    <div style="color:orange" ng-show="!form.password.$valid">Password should be at least 8 characters
+                        long and should contain one number,one character and one special
+                        character</div>
+                </div>
+                <div style="color: green" ng-show="form.password.$valid">Valid Password</div>
+            </div>
+            <button type="submit" ng-disabled="form.$invalid" ng-click="submit()" class="btn btn-primary">signUp</button>
+        </form>
+</div>
