@@ -12,7 +12,10 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-    }
+    },
+    channels:[{
+        type: mongoose.Schema.Types.ObjectId, ref: 'userData'
+    }]
 });
 
 const user = mongoose.model('user',userSchema,'userData')

@@ -2,11 +2,20 @@ const express = require('express');
 const mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var user = require('./models/user');
+const session = require('express-session');
 var bcrypt = require('bcrypt');
+var userChannel = require('./models/channel');
+var postMsg = require('./models/post');
 
 const app = express();
 
+app.use(session({secret: 'ssshhhhh',saveUninitialized: true,resave: true}));
+
+var sess;
+
 const url = "mongodb://127.0.0.1:27017/myDB"
+
+const secret = process.env.SECRET || 'some other secret as default';
 
 //connect to mongo
 mongoose.connect(url,{ useNewUrlParser: true})
@@ -19,24 +28,27 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static('view'));
 
-// app.use(app.router);
 app.get('/', (req, res) =>{
     res.sendFile(__dirname + '/main.html');
 })
 
 app.post('/login', (req, res) =>{
+    sess = req.session;
     console.log("hello",req.body);
     user.find({
         email:req.body.email
-    },{password:1})
+    },{password:1,userName:1})
     .then(data=>{
+        console.log(data);
         if(data.length == 0){
             res.send("Invalid Email_id");
         }else{
            bcrypt.compare(req.body.password,data[0].password,(err,isMatch)=>{
                if(err) console.log(err)
                if(isMatch){
-                  res.send("Login successfully...");
+                sess.email = req.body.email;
+                console.log(data[0].userName);
+                res.send(data[0].userName);
                }else{
                   res.send("Password Incorrect");
                }
@@ -63,6 +75,120 @@ app.post("/signUp", (req, res) =>{
         console.log(err)
     })
 
+})
+app.get('/channel', (req, res) =>{
+    sess = req.session;
+    var channelName = [];
+    console.log(sess.email);
+    if(sess.email != undefined) {
+         user.find({
+             email: sess.email
+         },{channels:1,userName:1}).then(async data=>{ 
+            data[0].channels.map(id=>{
+                 channelName.push(new Promise((resolve, reject) =>{
+                    userChannel.find({
+                        _id:id
+                    },{channelName:1}).then(data1=>{
+                       console.log(data1[0]);
+                       resolve(data1[0]);
+                    })
+                }))
+        })
+        channelName.push(data[0].userName); 
+        res.send(await Promise.all(channelName));
+    })
+    }
+    else
+    {
+        res.send("No")
+    }
+})
+
+app.get('/getUser', (req, res) =>{
+    user.find({},{userName:1,region:1,email:1}).then(data=>{
+        res.send(data);
+    })
+})
+
+app.post('/createChannel',(req,res)=>{
+    console.log(req.body.person);
+    userChannel.insertMany({
+        channelName: req.body.name,
+        description: req.body.description,
+        tags: req.body.tags,
+        persons: req.body.person
+    },{_id:1}).then((data)=>
+    {
+        console.log(data[0]._id);
+        req.body.person.map(id=>{
+            user.findOneAndUpdate({ 
+                _id: mongoose.Types.ObjectId(id)
+            }, { $push: { "channels": data[0]._id }}).then(()=>{})
+        })
+        res.send("channel created");
+    })
+})
+
+app.post('/postMsg',(req,res)=>{
+    postMsg.insertMany({
+        msg: req.body.msg,
+        create_by: req.body.username,
+        channelName: req.body.name
+    }).then(()=>{
+        res.send(req.body.msg);
+    })
+})
+
+app.post('/getMsg',(req,res)=>{
+    console.log(req.body.channelid);
+    postMsg.find({
+        channelId: mongoose.Types.ObjectId(req.body.channelid)
+    },{msg:1,create_by:1}).then(data=>{
+        console.log(data.length);
+    if(data.length == 0){
+        res.send("No Message In This Channel")
+    }else{
+        res.send(data);
+    }
+    })
+})
+
+app.post('/getData',(req,res)=>{
+    sess = req.session;
+    console.log(req.body.req);
+    if(sess.email == undefined)
+    {
+        res.send("No")
+    }else if(req.body.req === 1){
+            postMsg.aggregate([
+                { $group: { _id: "$channelName", count: { $sum: 1 } } },
+                { $sort: {count: -1 } },
+                { $limit: 5}
+            ]).then(data=>{
+                console.log(data);
+                res.send(data);
+            })
+        }else if( req.body.req === 2){
+            res.send("ok")
+        }else if( req.body.req === 3){
+            user.aggregate([
+                { $group: { _id: "$region", count: { $sum: 1 } } },
+                { $sort: {count: -1 } },
+                { $limit: 5}
+            ]).then(data=>{
+                console.log(data);
+                res.send(data);
+            })
+        }else{
+            postMsg.aggregate([
+                { $group: { _id: "$create_by", count: { $sum: 1 } } },
+                { $sort: {count: -1 } },
+                { $limit: 5}
+            ]).then(data=>{
+                console.log(data);
+                res.send(data);
+            })
+        }
 })
 
 const PORT = process.env.PORT || 5000;

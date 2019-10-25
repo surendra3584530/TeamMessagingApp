@@ -1,0 +1,107 @@
+<div>
+<table class="table table-hover" style="position: relative;top: 10%;">
+        <thead>  
+          <tr>
+              <th>Dashboard</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-click="rowSelected(1)">
+            <td>Top 5 trending channels</td>
+          </tr>
+          <tr ng-click="rowSelected(2)">
+            <td>Top 5 trending tags</td>
+          </tr>
+          <tr ng-click="rowSelected(3)">
+            <td>Top 5 trending regions</td>
+          </tr>
+          <tr ng-click="rowSelected(4)">
+            <td>Top 5 trending users</td>
+          </tr>
+        </tbody>
+</table>
+<button style="position: relative; top:30%" type="btn btn-sm btn-success" ng-click="closeDashboard()">Go to channel page</button>
+
+<script type="text/ng-template" id="1.html">
+  <div class="modal-header">
+      <button type="button" class="close" ng-click="$dismiss()">&times;</button>
+      <h4 class="modal-title">Top 5 trending channels</h4>
+  </div>
+    <div class="modal-body">
+        <table>
+            <thead>  
+                <tr><th>channelName</th>
+                    <th style="position: relative; left:10%">count</th>
+                </tr>  
+            </thead>
+            <tbody>
+                <tr ng-repeat="data in trendchannels">
+                    <td>{{data._id}}</td>
+                    <td style="position: relative; left:10%">{{data.count}}</td>
+                </tr>
+            </tbody>
+        </table> 
+    </div> 
+</script>
+
+<script type="text/ng-template" id="2.html">
+  <div class="modal-header">
+      <button type="button" class="close" ng-click="$dismiss()">&times;</button>
+      <h4 class="modal-title">Top 5 trending channels</h4>
+  </div>
+    <div class="modal-body">
+        <table>
+            <thead>  
+                <tr>
+                  <th>tagName</th>
+                </tr>  
+            </thead>
+            <tbody>
+                <tr ng-repeat="data in trendtags">
+                    <td>{{data}}</td>
+                </tr>
+            </tbody>
+        </table> 
+    </div> 
+</script>
+
+<script type="text/ng-template" id="3.html">
+  <div class="modal-header">
+      <button type="button" class="close" ng-click="$dismiss()">&times;</button>
+      <h4 class="modal-title">Top 5 trending regions</h4>
+  </div>
+    <div class="modal-body">
+        <table>
+            <thead>  
+                <tr><th>regionName</th>
+                </tr>  
+            </thead>
+            <tbody>
+                <tr ng-repeat="data in trendregions">
+                    <td>{{data._id}}</td>
+                </tr>
+            </tbody>
+        </table> 
+    </div> 
+</script>
+
+
+<script type="text/ng-template" id="4.html">
+  <div class="modal-header">
+      <button type="button" class="close" ng-click="$dismiss()">&times;</button>
+      <h4 class="modal-title">Top 5 trending users</h4>
+  </div>
+    <div class="modal-body">
+        <table>
+            <thead>  
+                <tr><th>userName</th>
+                </tr>  
+            </thead>
+            <tbody>
+                <tr ng-repeat="data in trendusers">
+                    <td>{{data._id}}</td>
+                </tr>
+            </tbody>
+        </table> 
+    </div> 
+</script>
