@@ -34,12 +34,10 @@ app.get('/', (req, res) =>{
 
 app.post('/login', (req, res) =>{
     sess = req.session;
-    console.log("hello",req.body);
     user.find({
         email:req.body.email
     },{password:1,userName:1})
     .then(data=>{
-        console.log(data);
         if(data.length == 0){
             res.send("Invalid Email_id");
         }else{
@@ -47,7 +45,6 @@ app.post('/login', (req, res) =>{
                if(err) console.log(err)
                if(isMatch){
                 sess.email = req.body.email;
-                console.log(data[0].userName);
                 res.send(data[0].userName);
                }else{
                   res.send("Password Incorrect");
@@ -62,7 +59,6 @@ app.post("/signUp", (req, res) =>{
     var salt = bcrypt.genSaltSync(10);
     // Hash the password with the salt
     var hashPassword = bcrypt.hashSync(req.body.password, salt);
-    console.log(req.body.email,req.body.region,req.body.username,hashPassword);
    
     user.insertMany({
         email: req.body.email,
@@ -89,7 +85,6 @@ app.get('/channel', (req, res) =>{
                     userChannel.find({
                         _id:id
                     },{channelName:1}).then(data1=>{
-                       console.log(data1[0]);
                        resolve(data1[0]);
                     })
                 }))
@@ -111,7 +106,6 @@ app.get('/getUser', (req, res) =>{
 })
 
 app.post('/createChannel',(req,res)=>{
-    console.log(req.body.person);
     userChannel.insertMany({
         channelName: req.body.name,
         description: req.body.description,
@@ -119,7 +113,6 @@ app.post('/createChannel',(req,res)=>{
         persons: req.body.person
     },{_id:1}).then((data)=>
     {
-        console.log(data[0]._id);
         req.body.person.map(id=>{
             user.findOneAndUpdate({ 
                 _id: mongoose.Types.ObjectId(id)
@@ -140,11 +133,9 @@ app.post('/postMsg',(req,res)=>{
 })
 
 app.post('/getMsg',(req,res)=>{
-    console.log(req.body.channelid);
     postMsg.find({
-        channelId: mongoose.Types.ObjectId(req.body.channelid)
-    },{msg:1,create_by:1}).then(data=>{
-        console.log(data.length);
+        channelName: req.body.channelName
+    },{_id:0,msg:1,create_by:1}).then(data=>{
     if(data.length == 0){
         res.send("No Message In This Channel")
     }else{
@@ -155,7 +146,6 @@ app.post('/getMsg',(req,res)=>{
 
 app.post('/getData',(req,res)=>{
     sess = req.session;
-    console.log(req.body.req);
     if(sess.email == undefined)
     {
         res.send("No")
@@ -165,7 +155,6 @@ app.post('/getData',(req,res)=>{
                 { $sort: {count: -1 } },
                 { $limit: 5}
             ]).then(data=>{
-                console.log(data);
                 res.send(data);
             })
         }else if( req.body.req === 2){
@@ -176,7 +165,6 @@ app.post('/getData',(req,res)=>{
                 { $sort: {count: -1 } },
                 { $limit: 5}
             ]).then(data=>{
-                console.log(data);
                 res.send(data);
             })
         }else{
@@ -185,7 +173,6 @@ app.post('/getData',(req,res)=>{
                 { $sort: {count: -1 } },
                 { $limit: 5}
             ]).then(data=>{
-                console.log(data);
                 res.send(data);
             })
         }

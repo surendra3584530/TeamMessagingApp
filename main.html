@@ -46,7 +46,6 @@
                 app.controller('login',function($scope,$http,$window, $timeout,$location){
                     $scope.loginSubmit= function()
                     {
-                        console.log("login")
                         var data = JSON.stringify({
                             email: $scope.email,
                             password:  $scope.password
@@ -90,7 +89,6 @@
                         method: "POST",
                         data: data
                     }).then(data=>{
-                        console.log(data,data.data)
                         $timeout(function() {
                             alert(data.data);
                       },0).then(function(){
@@ -117,11 +115,8 @@
                             }else
                             {
                                 var userName = data.data.pop();
-                                console.log(data.data,name);
                                 $scope.channelArray= data.data;
                                 $scope.rowSelected = function(data){
-                                    console.log(name,data._id);
-                                    console.log("row click");
                                     $uibModal.open({
                                         templateUrl: 'channelPost.html',
                                         controller: 'ChannelController', 
@@ -151,7 +146,6 @@
                         })
                         $scope.open = function()
                         {
-                             console.log("hiii")
                              $uibModal.open({
                                  templateUrl: 'channelModal.html',
                                  controller: 'ModalController',  
@@ -168,30 +162,34 @@
                         }
                         $scope.openDashboard= function()
                         {
-                            console.log("dashboard");
                             $window.location.href = "#!dashboard"
                         }
                 })
 
-                app.controller("ChannelController", function ($scope,$uibModal,$http,Name,userName,id) 
+                app.controller("ChannelController", function ($scope,$uibModal,$http,Name,userName) 
                 {
                     $scope.channelName = Name;
+                    $scope.check = false;
+                    $scope.messageArray  = [];
                     var data = JSON.stringify({
-                        channelid: id
+                        channelName : Name
                     })
-                    console.log(data);
                     $http({
                           url: "/getMsg", 
                           method: "POST", 
                           data: data
                     }).then(data=>{
-                          console.log(data,data.data) 
-                          $scope.message = data.data;  
+                          if(data.data === "No Message In This Channel"){
+                            $scope.msg = data.data;
+                          }else{
+                             $scope.check = true;
+                            $scope.messageArray = data.data;
+                          }  
                     }).catch(err=>{
                           console.log(err);
                     })
+
                     $scope.createPost = function(){
-                        console.log("create post")
                         $uibModal.open({
                             templateUrl: 'post.html',
                             controller: 'PostController', 
@@ -217,7 +215,6 @@
                 app.controller("PostController", function ($scope,$uibModalInstance,$http,userName,name) {
                     $scope.Name = userName;
                     $scope.sendPost = function() {
-                        console.log($scope.msg);
                         var data = JSON.stringify({
                             username: userName,
                             name: name,
@@ -229,7 +226,6 @@
                             method:"POST",
                             data: data
                         }).then(data=>{
-                            console.log(data,data.data)
                             $uibModalInstance.close(data.data);
                         }).catch(err=>{
                             console.log(err);
@@ -245,7 +241,6 @@
                             url: "/getUser", 
                             method: "GET",
                         }).then(data=>{
-                            console.log(data,data.data)
                             $scope.check = true;
                             $scope.dataArray = data.data;
                         }).catch(err=>{
@@ -258,7 +253,6 @@
                     }
 
                     $scope.submit = function () {
-                        console.log($scope.channelName,$scope.desc,$scope.tags);
                         if($scope.channelName === undefined || $scope.desc === undefined || $scope.tags === undefined){
                             alert("channel not created,fields are empty");
                         }else{
@@ -275,7 +269,6 @@
                                     method: "POST",
                                     data: data
                                 }).then(data=>{
-                                    console.log(data,data.data)
                                 }).catch(err=>{
                                     console.log(err)
                             })
@@ -302,7 +295,6 @@
                 app.controller('dashboard',function($scope,$http,$timeout,$window,$uibModal){
                     $scope.closeDashboard= function()
                     {
-                            console.log("dashboard");
                             $window.location.href = "#!channel"
                     }
                     $scope.rowSelected = function(data){
@@ -310,7 +302,6 @@
                         var data = JSON.stringify({
                             req: data
                         })
-                        console.log(check)
                         $http({
                             url: "/getData",
                             method: "POST",
@@ -319,7 +310,6 @@
                             if(data.data.length === 0){
                                 alert("no channel create yet")
                             }else if(check === 1){
-                                console.log(data,data.data);
                                 $uibModal.open({
                                     templateUrl: '1.html',
                                     controller: 'firstcontroller',
