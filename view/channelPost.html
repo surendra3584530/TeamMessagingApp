@@ -1,21 +1,6 @@
 <head>
        
     <style>
-        .container {
-            width: 110%;
-            border: 2px solid #dedede;
-            background-color: #f1f1f1;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 10px 0;
-        }
-        .contain{
-            width: 530px;
-            overflow-y: scroll;
-            position: relative;
-            height: 310px;
-            overflow-x: hidden;
-        }
         #message {
             width: 80%;
             margin-bottom: 3rem;
@@ -40,20 +25,13 @@
         </div>
         <div class="modal-body">
                         <h6>Messages</h6>
-                        <ul>
-                          <label>{{msg}}</label>
-                        <div class="contain">
-                          <div ng-repeat="message in messageArray" ng-show="check">
-                            <div class="container">
-                                <p>{{message.msg}}</p>
-                                <span style="position: relative; left: 70%;">send by:{{message.create_by}}</span>
-                            </div>
-                        </div>
-                        </ul>
-                        </div> 
+                        <label>{{msg}}</label>
+                    <div class="contain" style="overflow-y: auto;height: 220px;width: 560px;">
+                        <ul  ng-repeat="message in messageArray  track by $index" ng-show="check">{{message.msg}}</ul>
+                    </div>
         </div>
         <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-success" data-dismiss="modal" ng-click="createPost()">Create Post</button>
+                <button type="button" style="position: relative; left: 70%;" class="btn btn-sm btn-success" data-dismiss="modal" ng-click="createPost()">Create Post</button>
         </div>
     </div>
 </div>

@@ -75,7 +75,6 @@ app.post("/signUp", (req, res) =>{
 app.get('/channel', (req, res) =>{
     sess = req.session;
     var channelName = [];
-    console.log(sess.email);
     if(sess.email != undefined) {
          user.find({
              email: sess.email
@@ -135,7 +134,9 @@ app.post('/postMsg',(req,res)=>{
 app.post('/getMsg',(req,res)=>{
     postMsg.find({
         channelName: req.body.channelName
-    },{_id:0,msg:1,create_by:1}).then(data=>{
+    },{_id:0,msg:1,create_by:1}).skip(req.body.skip).
+    limit(req.body.limit)
+    .then(data=>{
     if(data.length == 0){
         res.send("No Message In This Channel")
     }else{
