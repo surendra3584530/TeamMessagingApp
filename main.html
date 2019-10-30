@@ -177,6 +177,21 @@
                         skip:start,
                         limit: end
                     })
+                    $scope.searchMsg = function(){
+                        var data = {
+                            channelName : Name,
+                            message : $scope.message
+                        }
+                        $http.post('/searchMsg',JSON.stringify(data)).then(function(data){
+                            if(data.data === "No Message In This Channel"){
+                                $scope.msg = data.data;
+                                $scope.messageArray = [];
+                        }else{
+                            $scope.messageArray = data.data;
+                            $scope.msg = "";
+                        }
+                    })
+                    }
                     $http({
                         url: "/getMsg", 
                         method: "POST", 

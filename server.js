@@ -131,10 +131,25 @@ app.post('/postMsg',(req,res)=>{
     })
 })
 
+app.post('/searchMsg',(req,res)=>{
+    console.log(req.body.message);
+    const regex = new RegExp(req.body.message);
+    postMsg.find({
+        channelName: req.body.channelName,
+        msg: {$regex: regex},
+    }).then(data=>{
+    if(data.length == 0){
+        res.send("No Message In This Channel")
+    }else{
+        res.send(data);
+    }
+    })
+})
+
 app.post('/getMsg',(req,res)=>{
     postMsg.find({
         channelName: req.body.channelName
-    },{_id:0,msg:1,create_by:1}).skip(req.body.skip).
+    },{_id:0,msg:1}).skip(req.body.skip).
     limit(req.body.limit)
     .then(data=>{
     if(data.length == 0){
