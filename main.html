@@ -13,7 +13,7 @@
        <div class="container">
             <h1>Team-Messaging-App</h1>
         <div>
-            <a href="#!login">Login</a>
+            <a id="login" href="#!login">Login</a>
             <a href="#!signUp">signUp</a>
             <div ng-view></div>
         </div>
@@ -65,6 +65,7 @@
                                 
                             }
                             else{
+                                document.getElementById("login").style.display = 'none';
                                 $timeout(function() {
                                     alert("Login Successfully");
                                 },0).then(()=>{
@@ -100,6 +101,7 @@
                   }
                 })
                 app.controller('channel',function($scope,$http,$uibModal,$timeout,$window){  
+                    document.getElementById("login").style.display = 'none';
                         $http({
                             url: "/channel", 
                             method: "GET",
@@ -108,6 +110,7 @@
                                 $timeout(function() {
                                     alert("please login to access data");
                                 },0).then(()=>{
+                                    document.getElementById("login").style.display = 'block';
                                     $window.location.href = "#!login"
                                 })
                             }else if(data.data.length === 1){
@@ -163,6 +166,20 @@
                         $scope.openDashboard= function()
                         {
                             $window.location.href = "#!dashboard"
+                        }
+                        $scope.logout = function()
+                        {
+                            $http({
+                                url: "/logout", 
+                                method: "POST",
+                            }).then(data=>{
+                                $timeout(function() {
+                                    alert(data.data);
+                                },0).then(function(){
+                                    document.getElementById("login").style.display = 'block';
+                                    $window.location.href = "#!/";
+                                });
+                            })
                         }
                 })
 
@@ -308,10 +325,10 @@
                             })
                                 $uibModalInstance.close();
                             };
+                        }
                             $scope.cancel = function () {
                                     $uibModalInstance.dismiss('cancel');
                             };
-                    }
                 });
                 app.controller('firstcontroller',function($scope,data){
                     $scope.trendchannels = data;
