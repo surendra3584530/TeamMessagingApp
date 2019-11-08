@@ -188,9 +188,10 @@
                         limit: end
                     })
                     $scope.searchMsg = function(){
+                        console.log($scope.searchmsg);
                         var data = {
                             channelName : Name,
-                            message : $scope.message
+                            message : $scope.searchmsg
                         }
                         $http.post('/searchMsg',JSON.stringify(data)).then(function(data){
                             if(data.data === "No Message In This Channel"){
