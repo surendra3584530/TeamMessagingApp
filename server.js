@@ -132,7 +132,6 @@ app.post('/postMsg',(req,res)=>{
 })
 
 app.post('/searchMsg',(req,res)=>{
-    console.log(req.body.message);
     const regex = new RegExp(req.body.message);
     postMsg.find({
         channelName: req.body.channelName,
