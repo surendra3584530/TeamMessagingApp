@@ -78,6 +78,7 @@
                     }
                 })
                 app.controller('signUp', function($scope,$http,$window, $timeout){
+                    document.getElementById("login").style.display = 'block';
                     $scope.submit= function(){
                     var data = JSON.stringify({
                             email: $scope.email,
@@ -176,6 +177,7 @@
 
                 app.controller("ChannelController", function ($scope,$window,$uibModal,$http,Name,userName) 
                 {
+                    $scope.flag = true;
                     $scope.channelName = Name;
                     $scope.check = false;
                     $scope.messageArray  = [];
@@ -186,9 +188,10 @@
                         limit: end
                     })
                     $scope.searchMsg = function(){
+                        console.log($scope.searchmsg);
                         var data = {
                             channelName : Name,
-                            message : $scope.message
+                            message : $scope.searchmsg
                         }
                         $http.post('/searchMsg',JSON.stringify(data)).then(function(data){
                             if(data.data === "No Message In This Channel"){
@@ -244,8 +247,8 @@
                                 }
                             }
                         }).result.then(
-                             function (data) {
-                                 $scope.message = data
+                             function (data){
+                                $scope.flag = false;
                                  alert("Send");
                              }, 
                              function () {
@@ -257,6 +260,8 @@
                 app.controller("PostController", function ($scope,$uibModalInstance,$http,userName,name) {
                     $scope.Name = userName;
                     $scope.sendPost = function() {
+                        console.log(JSON.stringify($scope.msg));
+                        document.getElementById("msg").innerHTML = $scope.msg;
                         var data = JSON.stringify({
                             username: userName,
                             name: name,
@@ -291,6 +296,7 @@
                     }
                     $scope.createLink = function(data) {
                         person.push(data);
+                        document.getElementById(data).disabled = true;
                         $scope.isDisabled = true;
                     }
 
