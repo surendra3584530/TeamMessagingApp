@@ -177,6 +177,7 @@
 
                 app.controller("ChannelController", function ($scope,$window,$uibModal,$http,Name,userName) 
                 {
+                    $scope.flag = true;
                     $scope.channelName = Name;
                     $scope.check = false;
                     $scope.messageArray  = [];
@@ -245,8 +246,8 @@
                                 }
                             }
                         }).result.then(
-                             function (data) {
-                                 $scope.message = data
+                             function (data){
+                                $scope.flag = false;
                                  alert("Send");
                              }, 
                              function () {
@@ -258,6 +259,8 @@
                 app.controller("PostController", function ($scope,$uibModalInstance,$http,userName,name) {
                     $scope.Name = userName;
                     $scope.sendPost = function() {
+                        console.log(JSON.stringify($scope.msg));
+                        document.getElementById("msg").innerHTML = $scope.msg;
                         var data = JSON.stringify({
                             username: userName,
                             name: name,

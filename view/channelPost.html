@@ -21,13 +21,14 @@
         <div class="modal-channel-header">
           <button type="button" class="close" ng-click="$dismiss()">&times;</button>
           <h4 class="modal-title">{{channelName}}</h4>
-          <input type="text" ng-model = "message", style="position: relative; left:64%" placeholder="Search Post"/><button ng-click="searchMsg()"  style="position: relative; left:64%">search</button>
+          <input type="text", style="position: relative; left:64%" placeholder="Search Post"/><button ng-click="searchMsg()"  style="position: relative; left:64%">search</button>
         </div>
         <div class="modal-body">
                         <h6>Messages</h6>
-                        <label>{{msg}}</label>
+                        <label ng-show="flag">{{msg}}</label>
                     <div class="contain" style="overflow-y: auto;height: 220px;width: 560px;">
-                        <ul  ng-repeat="message in messageArray  track by $index" ng-show="check">{{message.msg}}</ul>
+                        <ul ng-repeat="message in messageArray  track by $index" ng-show="check">{{message.msg}}</ul>
+                        <ul id="msg"></ul>
                     </div>
         </div>
         <div class="modal-footer">
