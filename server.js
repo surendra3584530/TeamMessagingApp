@@ -194,15 +194,6 @@ app.post('/getData',(req,res)=>{
         }
 })
 
-app.post('/logout',(req,res)=>{
-    req.session.destroy((err) => {
-        if(err) {
-            return console.log(err);
-        }
-        res.send("logout sucessfully....")
-    })
-})
-
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, console.log(`server started on port ${PORT}`))

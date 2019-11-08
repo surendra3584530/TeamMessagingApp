@@ -169,17 +169,8 @@
                         }
                         $scope.logout = function()
                         {
-                            $http({
-                                url: "/logout", 
-                                method: "POST",
-                            }).then(data=>{
-                                $timeout(function() {
-                                    alert(data.data);
-                                },0).then(function(){
-                                    document.getElementById("login").style.display = 'block';
-                                    $window.location.href = "#!/";
-                                });
-                            })
+                            document.getElementById("login").style.display = 'block';
+                            $window.location.href = "#!/";
                         }
                 })
 
