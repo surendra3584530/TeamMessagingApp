@@ -1,0 +1,37 @@
+<div>
+        <div class="modal-header">
+             <h3>Create Channel</h3>
+        </div>
+        <form>
+          <div class="modal-body">
+            <label>Channel Name:</label>
+            <input type="text" ng-model="channelName"/>
+            <label>Description</label>
+            <textarea type="text" ng-model="desc"></textarea>
+            <div class="modal-body">
+                <label>Tags:</label>
+                <tags-input ng-model="tags"  use-strings="true"></tags-input>
+            </div>
+            <button class="btn btn-success" ng-click="getUser()">invite users</button>
+        <div ng-show="check">
+                <table>
+                        <tr>
+                          <th>userName</th>
+                          <th style="position: relative; left: 20%;">Region</th>
+                          <th style="position: relative; left: 40%;">Email_id</th>
+                        </tr>
+                        <tr ng-repeat="data in dataArray">
+                          <td>{{data.userName}}</td>
+                          <td style="position: relative; left: 20%;">{{data.region}}</td>
+                          <td style="position: relative; left: 40%;">{{data.email}}</td>
+                          <td><button class="btn btn-sm btn-success" ng-click="createLink(data._id)" style="position: relative; left: 350%;" ng-disabled="isDisabled">invite</button></td>
+                        </tr>
+                </table>
+        </div>
+        </div>
+          <div class="modal-footer">
+              <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+              <input type="submit" class="btn btn-success" value="Create" ng-disabled="!isDisabled"  ng-click="submit()" />
+          </div>
+        </form>
+</div>

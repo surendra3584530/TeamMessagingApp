@@ -1,0 +1,14 @@
+<div>
+        <h2>Login</h2>
+        <form name="loginForm" ng-controller="login" >
+            <div class="form-group">
+                <label for="Email">Email:</label>
+                <input type="email" name="email" class="form-control" ng-model="email" required />
+            </div><br>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" class="form-control" ng-model="password" required ng-pattern="/^(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,20}$/" />
+            </div><br>
+            <a href="#!channels"><button type="submit" ng-disabled="loginForm.$invalid" class="btn btn-primary" ng-click="loginSubmit()">Login</button></a>
+        </form>
+</div>

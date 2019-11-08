@@ -1,0 +1,55 @@
+<head>
+       
+    <style>
+        #message {
+            width: 80%;
+            margin-bottom: 3rem;
+        }
+        .modal-channel-dialog {
+            width: 360px;
+            height: 450px;
+        }
+        .modal-channel-header {
+            width: 166%;
+            height: 15%;
+            background-color:lightcyan;
+        }
+    </style>
+</head>
+<div>
+    <div class="modal-channel-dialog">
+        <div class="modal-channel-header">
+          <button type="button" class="close" ng-click="$dismiss()">&times;</button>
+          <h4 class="modal-title">{{channelName}}</h4>
+          <input type="text" ng-model = "message", style="position: relative; left:64%" placeholder="Search Post"/><button ng-click="searchMsg()"  style="position: relative; left:64%">search</button>
+        </div>
+        <div class="modal-body">
+                        <h6>Messages</h6>
+                        <label>{{msg}}</label>
+                    <div class="contain" style="overflow-y: auto;height: 220px;width: 560px;">
+                        <ul  ng-repeat="message in messageArray  track by $index" ng-show="check">{{message.msg}}</ul>
+                    </div>
+        </div>
+        <div class="modal-footer">
+                <button type="button" style="position: relative; left: 70%;" class="btn btn-sm btn-success" data-dismiss="modal" ng-click="createPost()">Create Post</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="post.html">
+    <div class="modal-header">
+          <button type="button" class="close" ng-click="$dismiss()">&times;</button>
+          <h4 class="modal-title">create post</h4>
+    </div>
+    <form ng-submit="sendPost()">
+        <div class="modal-body">
+            <textarea ng-model="msg" class="form-control" tabindex="4"
+                placeholder="Write your message" required></textarea>
+            <label style="position: relative; left:70%;">Created By:{{Name}}</label>
+        </div> 
+        <div class="modal-footer">
+                <input type="submit" class="btn btn-success" value="Send"/>
+        </div>
+    </form>
+</script>
+

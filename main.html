@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+    <title>Team-Messaging-App</title>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>
+        <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"> 
+        <script src="http://mbenford.github.io/ngTagsInput/js/ng-tags-input.min.js"></script>
+        <link rel="stylesheet" href="http://mbenford.github.io/ngTagsInput/css/ng-tags-input.min.css"/>
+    </head> 
+    <body ng-app="myApp" ng-controller="myCtrl">
+       <div class="container">
+            <h1>Team-Messaging-App</h1>
+        <div>
+            <a id="login" href="#!login">Login</a>
+            <a href="#!signUp">signUp</a>
+            <div ng-view></div>
+        </div>
+       </div>
+        <script>
+                var app = angular.module('myApp', ["ngRoute","ui.bootstrap","ngTagsInput"]);
+                app.config(['$routeProvider',function($routeProvider) {
+                    $routeProvider
+                    .when("/login", {
+                        templateUrl : "login.html",
+                        controller: "login"
+                    })
+                    .when("/signUp", {
+                        templateUrl : "signUp.html",
+                        controller: "signUp"
+                    })
+                    .when("/channel", {
+                        templateUrl : "channels.html",
+                        controller: "channel", 
+                    })
+                    .when("/dashboard", {
+                        templateUrl : "dashboard.html",
+                        controller: "dashboard", 
+                    })
+                }])
+
+                app.controller('myCtrl', function($scope) {
+                    $scope.check = 'true';
+                });
+                app.controller('login',function($scope,$http,$window, $timeout,$location){
+                    $scope.loginSubmit= function()
+                    {
+                        var data = JSON.stringify({
+                            email: $scope.email,
+                            password:  $scope.password
+                        });
+                        $http({
+                            url: "/login", 
+                            method: "POST",
+                            data: data
+                        }).then(data=>{
+                            if(data.data === "Invalid Email_id" || data.data === "Password Incorrect")
+                            {
+                                $timeout(function() {
+                                    alert(data.data);
+                                },0).then(()=>{
+                                    $window.location.href = "#!login"
+                                })
+                                
+                            }
+                            else{
+                                document.getElementById("login").style.display = 'none';
+                                $timeout(function() {
+                                    alert("Login Successfully");
+                                },0).then(()=>{
+                                    $window.location.href = "#!channel"
+                                })
+                            }
+                        }).catch(err=>{
+                            console.log("err:",err);
+                        })
+                    }
+                })
+                app.controller('signUp', function($scope,$http,$window, $timeout){
+                    $scope.submit= function(){
+                    var data = JSON.stringify({
+                            email: $scope.email,
+                            region : $scope.region,
+                            username : $scope.username,
+                            password:  $scope.password
+                    });
+                    $http({
+                        url: "/signUp", 
+                        method: "POST",
+                        data: data
+                    }).then(data=>{
+                        $timeout(function() {
+                            alert(data.data);
+                      },0).then(function(){
+                          window.location.href = "#!/";
+                      });
+                    }).catch(err=>{
+                        console.log("err:",err);
+                    }) 
+                  }
+                })
+                app.controller('channel',function($scope,$http,$uibModal,$timeout,$window){  
+                    document.getElementById("login").style.display = 'none';
+                        $http({
+                            url: "/channel", 
+                            method: "GET",
+                        }).then(data=>{
+                            if(data.data === "No"){
+                                $timeout(function() {
+                                    alert("please login to access data");
+                                },0).then(()=>{
+                                    document.getElementById("login").style.display = 'block';
+                                    $window.location.href = "#!login"
+                                })
+                            }else if(data.data.length === 1){
+                                $scope.message = "No channel is created";
+                            }else
+                            {
+                                var userName = data.data.pop();
+                                $scope.channelArray= data.data;
+                                $scope.rowSelected = function(data){
+                                    $uibModal.open({
+                                        templateUrl: 'channelPost.html',
+                                        controller: 'ChannelController', 
+                                        resolve: {
+                                            Name: function () {
+                                                return data.channelName;
+                                            },
+                                            id: function(){
+                                                return data._id
+                                            },
+                                            userName: function(){
+                                                return userName;
+                                            }
+                                        }
+                                    }).result.then(
+                                        function () {
+                                            alert("channel created");
+                                        }, 
+                                        function () {
+                                            alert("Cancel");
+                                        }
+                                    );
+                                }
+                            }
+                        }).catch(err=>{
+                            console.log(err)
+                        })
+                        $scope.open = function()
+                        {
+                             $uibModal.open({
+                                 templateUrl: 'channelModal.html',
+                                 controller: 'ModalController',  
+                             })
+                             .result.then(
+                                 function () {
+                                     alert("channel created");
+                                     $window.location.reload();
+                                 }, 
+                                 function () {
+                                     alert("Cancel");
+                                 }
+                             );
+                        }
+                        $scope.openDashboard= function()
+                        {
+                            $window.location.href = "#!dashboard"
+                        }
+                        $scope.logout = function()
+                        {
+                            document.getElementById("login").style.display = 'block';
+                            $window.location.href = "#!/";
+                        }
+                })
+
+                app.controller("ChannelController", function ($scope,$window,$uibModal,$http,Name,userName) 
+                {
+                    $scope.channelName = Name;
+                    $scope.check = false;
+                    $scope.messageArray  = [];
+                    var start=0,end=8;
+                    var data = JSON.stringify({
+                        channelName : Name,
+                        skip:start,
+                        limit: end
+                    })
+                    $scope.searchMsg = function(){
+                        var data = {
+                            channelName : Name,
+                            message : $scope.message
+                        }
+                        $http.post('/searchMsg',JSON.stringify(data)).then(function(data){
+                            if(data.data === "No Message In This Channel"){
+                                $scope.msg = data.data;
+                                $scope.messageArray = [];
+                        }else{
+                            $scope.messageArray = data.data;
+                            $scope.msg = "";
+                        }
+                    })
+                    }
+                    $http({
+                        url: "/getMsg", 
+                        method: "POST", 
+                        data: data
+                        }).then(data=>{
+                        if(data.data === "No Message In This Channel"){
+                            $scope.msg = data.data;
+                        }else{
+                            $scope.check = true;
+                            $scope.messageArray = data.data;
+                            angular.element(document.querySelector('.contain')).bind('scroll',function()
+                            {
+                                if(this.offsetHeight + this.scrollTop == this.scrollHeight)
+                                {
+                                    start = end;
+                                    end = start + end;
+                                    var data = {
+                                        channelName : Name,
+                                        skip:start,
+                                        limit: end
+                                    }
+                                    $http.post('/getMsg',JSON.stringify(data)).then(function(data){
+                                        $scope.messageArray = $scope.messageArray.concat(data.data);
+                                    })
+                                }
+                            }) 
+                        }
+                        }).catch(err=>{
+                        console.log(err);
+                    })
+
+                    $scope.createPost = function(){
+                        $uibModal.open({
+                            templateUrl: 'post.html',
+                            controller: 'PostController', 
+                            resolve: {
+                                userName: function () {
+                                    return userName;
+                                },
+                                name: function(){
+                                    return $scope.channelName;
+                                }
+                            }
+                        }).result.then(
+                             function (data) {
+                                 $scope.message = data
+                                 alert("Send");
+                             }, 
+                             function () {
+                                 alert("Cancel");
+                             }
+                        );
+                    }
+                })
+                app.controller("PostController", function ($scope,$uibModalInstance,$http,userName,name) {
+                    $scope.Name = userName;
+                    $scope.sendPost = function() {
+                        var data = JSON.stringify({
+                            username: userName,
+                            name: name,
+                            msg: $scope.msg 
+                        });
+                        
+                        $http({
+                            url:"/postMsg", 
+                            method:"POST",
+                            data: data
+                        }).then(data=>{
+                            $uibModalInstance.close(data.data);
+                        }).catch(err=>{
+                            console.log(err);
+                        })
+                    }
+                })
+
+                app.controller("ModalController", function ($scope, $uibModalInstance,$http) {
+                    var person = [];
+                    $scope.isDisabled = false;
+                    $scope.getUser = function(){
+                        $http({
+                            url: "/getUser", 
+                            method: "GET",
+                        }).then(data=>{
+                            $scope.check = true;
+                            $scope.dataArray = data.data;
+                        }).catch(err=>{
+                            console.log(err)
+                        })
+                    }
+                    $scope.createLink = function(data) {
+                        person.push(data);
+                        $scope.isDisabled = true;
+                    }
+
+                    $scope.submit = function () {
+                        if($scope.channelName === undefined || $scope.desc === undefined || $scope.tags === undefined){
+                            alert("channel not created,fields are empty");
+                        }else{
+                            console.log(person);
+                            var data = JSON.stringify({
+                                    name: $scope.channelName,
+                                    description : $scope.desc,
+                                    tags : $scope.tags,
+                                    person: person
+                            })
+                            console.log(data);
+                            $http({
+                                    url: "/createChannel", 
+                                    method: "POST",
+                                    data: data
+                                }).then(data=>{
+                                }).catch(err=>{
+                                    console.log(err)
+                            })
+                                $uibModalInstance.close();
+                            };
+                        }
+                            $scope.cancel = function () {
+                                    $uibModalInstance.dismiss('cancel');
+                            };
+                });
+                app.controller('firstcontroller',function($scope,data){
+                    $scope.trendchannels = data;
+                })
+                app.controller('secondcontroller',function($scope,data){
+                    $scope.trendtags = data;
+                })
+                app.controller('thirdcontroller',function($scope,data){
+                    $scope.trendregions = data;
+                })
+                app.controller('fourthcontroller',function($scope,data){
+                    $scope.trendusers = data;
+                })
+
+                app.controller('dashboard',function($scope,$http,$timeout,$window,$uibModal){
+                    $scope.closeDashboard= function()
+                    {
+                            $window.location.href = "#!channel"
+                    }
+                    $scope.rowSelected = function(data){
+                        var check = data;
+                        var data = JSON.stringify({
+                            req: data
+                        })
+                        $http({
+                            url: "/getData",
+                            method: "POST",
+                            data: data
+                        }).then(data=>{
+                            if(data.data.length === 0){
+                                alert("no channel create yet")
+                            }else if(check === 1){
+                                $uibModal.open({
+                                    templateUrl: '1.html',
+                                    controller: 'firstcontroller',
+                                    resolve: {
+                                        data: function () {
+                                            return data.data;
+                                        }
+                                    }
+                                })
+                            }else if(check === 2){
+                                $uibModal.open({
+                                    templateUrl: '2.html',
+                                    controller: 'secondcontroller',
+                                    resolve: {
+                                        data: function () {
+                                            return data.data;
+                                        }
+                                    }
+                                })
+                            }else if(check === 3){
+                                $uibModal.open({
+                                    templateUrl: '3.html',
+                                    controller: 'thirdcontroller',
+                                    resolve: {
+                                        data: function () {
+                                            return data.data;
+                                        }
+                                    }
+                                })
+                            }else if(check === 4){
+                                $uibModal.open({
+                                    templateUrl: '4.html',
+                                    controller: 'fourthcontroller',
+                                    resolve: {
+                                        data: function () {
+                                            return data.data;
+                                        }
+                                    }
+                                })
+                            }
+                            if(data.data === "No"){
+                                $timeout(function() {
+                                    alert("please login to access data");
+                                },0).then(()=>{
+                                    $window.location.href = "#!login"
+                                })
+                            }
+                        }).catch(err=>{
+                            console.log(err)
+                        })
+                    }
+                })
+        </script>
+    </body>
+</html>
