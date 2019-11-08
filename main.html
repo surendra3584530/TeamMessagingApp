@@ -78,6 +78,7 @@
                     }
                 })
                 app.controller('signUp', function($scope,$http,$window, $timeout){
+                    document.getElementById("login").style.display = 'block';
                     $scope.submit= function(){
                     var data = JSON.stringify({
                             email: $scope.email,
@@ -291,6 +292,7 @@
                     }
                     $scope.createLink = function(data) {
                         person.push(data);
+                        document.getElementById(data).disabled = true;
                         $scope.isDisabled = true;
                     }
 

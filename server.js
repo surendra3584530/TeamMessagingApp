@@ -18,7 +18,7 @@ const url = "mongodb://127.0.0.1:27017/myDB"
 const secret = process.env.SECRET || 'some other secret as default';
 
 //connect to mongo
-mongoose.connect(url,{ useNewUrlParser: true})
+mongoose.connect(url)
       .then(() => console.log("Mongodb connect sucessfully...."))
       .catch(err => console.log(err));
 
